@@ -1,5 +1,8 @@
 -- engine/main_loop.lua
+
+package.path = package.path .. ";/?.lua;/?/init.lua"
 local config = require("config")
+
 local Controller = require("model.engine_controller")
 
 local ENGINE_ID = require("engine_id")  -- "FL", "FR", "BL", or "BR"

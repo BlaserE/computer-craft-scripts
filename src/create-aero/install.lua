@@ -7,7 +7,7 @@ if not role then
   return
 end
 
-local BASE = "https://raw.githubusercontent.com/YOU/REPO/main/src/create-aero/"
+local BASE = "https://raw.githubusercontent.com/BlaserE/computer-craft-scripts/main/src/create-aero/"
 
 -- Files everyone needs.
 local common = {
@@ -16,23 +16,24 @@ local common = {
 
 -- Files per role.
 local role_files = {
-  ["bridge"] = {
+    ["bridge"] = {
     "bridge/startup.lua",
     "bridge/main_loop.lua",
     "model/mixer.lua",
-  },
-  ["engine"] = {
+    },
+    ["engine"] = {
     "engine/startup.lua",
+    "engine/main_loop.lua",
     "model/engine_controller.lua",
-  },
+    },
 }
 
 local function fetch(path)
   local url = BASE .. path
+  local dest = "/" .. path  -- absolute
   print("Fetching " .. path)
-  if fs.exists(path) then fs.delete(path) end
-  -- shell.run is the simplest way; alternatively use http.get directly.
-  shell.run("wget", url, path)
+  if fs.exists(dest) then fs.delete(dest) end
+  shell.run("wget", url, dest)
 end
 
 -- Pull common files.
@@ -50,7 +51,7 @@ for _, f in ipairs(files) do fetch(f) end
 -- For engine roles, write the engine ID into a small local config.
 if engine_role then
   local engine_id = role:match("^engine%-(%a+)$")
-  local f = fs.open("engine_id.lua", "w")
+  local f = fs.open("/engine_id.lua", "w")
   f.write("return \"" .. engine_id .. "\"")
   f.close()
   print("Engine ID set to " .. engine_id)

@@ -17,7 +17,6 @@ end
 function Controller:set_target(signal)
   self.target_signal = math.max(config.MIN_SIGNAL,
                        math.min(config.MAX_SIGNAL, signal))
-  self.last_command_tick = os.clock() * 20  -- approximate tick count
 end
 
 -- Advance one tick: move current_signal toward target_signal by SLEW_RATE.

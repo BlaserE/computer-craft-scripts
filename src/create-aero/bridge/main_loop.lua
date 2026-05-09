@@ -1,4 +1,5 @@
 -- bridge/main_loop.lua
+package.path = package.path .. ";/?.lua;/?/init.lua"
 local config = require("config")
 local mixer  = require("model.mixer")
 
@@ -38,22 +39,39 @@ local function broadcast_commands(targets)
   end
 end
 
-local function handle_telemetry()
-  -- Drain any pending telemetry messages without blocking the main loop.
-  while true do
-    local sender, msg = rednet.receive(config.REDNET_PROTOCOL, 0)
-    if not msg then break end
-    if msg.type == "telemetry" then
-      fleet[msg.engine_id] = msg
-    end
+local function broadcast_commands(targets)
+  for engine_id, target_signal in pairs(targets) do
+    local engine = config.ENGINES[engine_id]
+    rednet.send(engine.rednet_id, {
+      version = 1,
+      type = "cmd",
+      target_signal = target_signal,
+    }, config.REDNET_PROTOCOL)
   end
 end
 
+-- Main loop: strict tick clock, with telemetry drained inside each tick budget.
 while true do
+  local tick_start = os.clock()
+
   local inputs = read_inputs()
   local targets = mixer.compute(inputs)
   broadcast_commands(targets)
-  handle_telemetry()
-  -- Telemetry is captured in `fleet` for the view layer (later stages).
-  os.sleep(config.TICK_INTERVAL)
+
+  -- Drain telemetry until ~80% of tick budget is used, then sleep the rest.
+  local deadline = tick_start + config.TICK_INTERVAL * 0.8
+  repeat
+    local remaining = deadline - os.clock()
+    if remaining <= 0 then break end
+    local sender, msg = rednet.receive(config.REDNET_PROTOCOL, remaining)
+    if msg and msg.type == "telemetry" then
+      fleet[msg.engine_id] = msg
+    end
+  until false
+
+  -- Sleep any remaining tick budget.
+  local elapsed = os.clock() - tick_start
+  if elapsed < config.TICK_INTERVAL then
+    os.sleep(config.TICK_INTERVAL - elapsed)
+  end
 end
