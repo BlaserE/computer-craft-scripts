@@ -25,13 +25,13 @@ return {
 
   -- Engine identifiers and their physical positions on the ship.
   ENGINES = {
-    FL = { rednet_id = 2, position = "front-left"  },
-    FR = { rednet_id = 3, position = "front-right" },
-    BL = { rednet_id = 4, position = "back-left"   },
-    BR = { rednet_id = 5, position = "back-right"  },
+    FL = { rednet_id = 6, position = "front-left"  },
+    FR = { rednet_id = 7, position = "front-right" },
+    BL = { rednet_id = 8, position = "back-left"   },
+    BR = { rednet_id = 9, position = "back-right"  },
   },
 
-  BRIDGE_ID = 1,
+  BRIDGE_ID = 5,
   REDNET_PROTOCOL = "helicarrier-v1",
 
   -- The throttle signal that produces stable hover. Calibrate in-game.
