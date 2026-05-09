@@ -1,0 +1,11 @@
+name: Template Workflow
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Placeholder
+        run: echo "I live!!!"
