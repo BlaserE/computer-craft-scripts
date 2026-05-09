@@ -39,17 +39,6 @@ local function broadcast_commands(targets)
   end
 end
 
-local function broadcast_commands(targets)
-  for engine_id, target_signal in pairs(targets) do
-    local engine = config.ENGINES[engine_id]
-    rednet.send(engine.rednet_id, {
-      version = 1,
-      type = "cmd",
-      target_signal = target_signal,
-    }, config.REDNET_PROTOCOL)
-  end
-end
-
 -- Main loop: strict tick clock, with telemetry drained inside each tick budget.
 while true do
   local tick_start = os.clock()

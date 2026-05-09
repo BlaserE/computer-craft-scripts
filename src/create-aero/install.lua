@@ -51,10 +51,17 @@ for _, f in ipairs(files) do fetch(f) end
 -- For engine roles, write the engine ID into a small local config.
 if engine_role then
   local engine_id = role:match("^engine%-(%a+)$")
-  local f = fs.open("/engine_id.lua", "w")
-  f.write("return \"" .. engine_id .. "\"")
-  f.close()
+  
+  local id_file = fs.open("/engine_id.lua", "w")
+  id_file.write("return \"" .. engine_id .. "\"")
+  id_file.close()
   print("Engine ID set to " .. engine_id)
-end
 
-print("Install complete.")
+  local startup_file = fs.open("/startup.lua", "w")
+  startup_file.write('shell.run("/engine/startup.lua")\n')
+  startup_file.close()
+elseif role == "bridge" then
+  local f = fs.open("/startup.lua", "w")
+  f.write('shell.run("/bridge/startup.lua")\n')
+  f.close()
+end
